@@ -88,6 +88,7 @@ add_executable(symmetric symmetric.c)
 add_executable(ctc-test ctc-test.c)
 add_executable(multi-ctc-test multi-ctc-test.c)
 add_executable(csr csr.c)
+add_executable(bin-search bin-search.c)
 
 #################################
 # Disassembly
