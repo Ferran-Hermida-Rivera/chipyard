@@ -4,7 +4,6 @@
 #include <riscv-pk/encoding.h>
 
 #include "trigger.h"
-#include "encoding.h"
 
 #include <stdio.h>
 
