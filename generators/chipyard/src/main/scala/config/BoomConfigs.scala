@@ -71,6 +71,40 @@ class SimBlockDeviceMegaBoomV3Config extends Config(
   new chipyard.config.AbstractConfig)
 
 // ---------------------
+// BOOM V3 Performance characterization Configs
+// ---------------------
+
+class SmallBoomDistributedCountersConfig extends Config(
+  new chipyard.config.WithNPerfCounters(29) ++
+  new boom.v3.common.HasPMUDistributedCounters ++
+  new boom.v3.common.WithNSmallBooms(1) ++
+  new chipyard.config.AbstractConfig)
+
+class MediumBoomDistributedCountersConfig extends Config(
+  new chipyard.config.WithNPerfCounters(29) ++
+  new boom.v3.common.HasPMUDistributedCounters ++
+  new boom.v3.common.WithNMediumBooms(1) ++
+  new chipyard.config.AbstractConfig)
+
+class LargeBoomDistributedCountersConfig extends Config(
+  new chipyard.config.WithNPerfCounters(29) ++
+  new boom.v3.common.HasPMUDistributedCounters ++
+  new boom.v3.common.WithNLargeBooms(1) ++
+  new chipyard.config.AbstractConfig)
+
+class MegaBoomDistributedCountersConfig extends Config(
+  new chipyard.config.WithNPerfCounters(29) ++
+  new boom.v3.common.HasPMUDistributedCounters ++
+  new boom.v3.common.WithNMegaBooms(1) ++
+  new chipyard.config.AbstractConfig)
+
+class GigaBoomDistributedCountersConfig extends Config(
+  new chipyard.config.WithNPerfCounters(29) ++
+  new boom.v3.common.HasPMUDistributedCounters ++
+  new boom.v3.common.WithNGigaBooms(1) ++
+  new chipyard.config.AbstractConfig)
+
+// ---------------------
 // BOOM V4 Configs
 // Less stable and performant, but with more advanced micro-architecture
 // Use for PD exploration

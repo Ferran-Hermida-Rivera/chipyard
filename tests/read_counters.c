@@ -16,19 +16,23 @@ int main(){
 
   volatile int array[2048];
    
-  start_counters();
+  config();
+  dump_config();
+  read_start();
 
   fmadd_s(0.1f, 0.2f, 0.3f);
   fmadd_s(0.1f, 0.2f, 0.3f);
 
-  end_counters();
+  read_end();
+  dump_counters(4, 4, 8);
 
-  read_start_counters();
+  read_start();
 
   for (int i = 0; i < 2048; i++) {
     array[i] = 0;
   }
 
-  end_counters();
+  read_end();
+  dump_counters(4, 4, 8);
 
 }

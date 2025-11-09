@@ -87,10 +87,7 @@ add_executable(gcd gcd.c)
 add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
-add_executable(small_read_counters read_counters.c)
-add_executable(large_read_counters read_counters.c)
-add_executable(small_memcpy memcpy.c)
-add_executable(large_memcpy memcpy.c)
+add_executable(read_counters read_counters.c)
 
 #################################
 # Disassembly
@@ -129,26 +126,10 @@ add_dump_target(gcd)
 add_dump_target(hello)
 add_dump_target(mt-hello)
 add_dump_target(symmetric)
-add_dump_target(small_read_counters)
-add_dump_target(large_read_counters)
-add_dump_target(small_memcpy)
-add_dump_target(large_memcpy)
+add_dump_target(read_counters)
 
 # add custom include
-target_include_directories(small_read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
-target_compile_definitions(small_read_counters PRIVATE COREWIDTH=1)
-
-
-target_include_directories(large_read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
-target_compile_definitions(large_read_counters PRIVATE COREWIDTH=3)
-
-
-
-target_include_directories(small_memcpy PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
-target_compile_definitions(small_memcpy PRIVATE COREWIDTH=1)
-
-target_include_directories(large_memcpy PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
-target_compile_definitions(large_memcpy PRIVATE COREWIDTH=3)
+target_include_directories(read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
 
 # Add custom command to generate spiflash.img from spiflash.py
 add_custom_command(
