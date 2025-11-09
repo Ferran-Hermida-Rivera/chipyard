@@ -40,7 +40,7 @@ set(CMAKE_EXECUTABLE_SUFFIX            ".riscv")
 #################################
 
 # CPU architecture
-set(ARCH                "rv64imafd")
+set(ARCH                "rv64imafd_zifencei")
 set(ABI                 "lp64d")
 set(CMODEL              "medany")
 set(ARCH_FLAGS          -march=${ARCH} -mabi=${ABI} -mcmodel=${CMODEL})
@@ -87,6 +87,8 @@ add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
+add_executable(thousandadds thousandadds.c)
+add_executable(jumparound jumparound.c)
 
 #################################
 # Disassembly
