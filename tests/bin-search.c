@@ -67,15 +67,26 @@ int main()
 
     printf("Start bin search Test.\n");
 
-    int read = 0;
-    int write = 3;
-    asm volatile(
-        "csrw 0x814, %1\n"
-        "csrr %0, 0x814"
-        : "=r" (read)
-        : "r" (write)
-    );
-    printf("read back from the CSR: %x\n", read);
+    // int read = 0;
+    // int write = 0;
+    // asm volatile(
+    //     "csrw 0x830, %1\n"
+    //     "csrr %0, 0x830"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // int read = 0;
+    // int write = 4;
+    // asm volatile(
+    //     "csrw 0x820, %1\n"
+    //     "csrr %0, 0x820"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
 
     int size = 10;
     int values[size];
@@ -92,15 +103,66 @@ int main()
     else
         printf("test passed\n");
 
-    read = 0;
-    write = 13;
-    asm volatile(
-        "csrw 0x814, %1\n"
-        "csrr %0, 0x814"
-        : "=r" (read)
-        : "r" (write)
-    );
-    printf("read back from the CSR: %x\n", read);
+    // read = 0;
+    // write = 1;
+    // asm volatile(
+    //     "csrw 0x830, %1\n"
+    //     "csrr %0, 0x830"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // read = 0;
+    // write = 6;
+    // asm volatile(
+    //     "csrw 0x820, %1\n"
+    //     "csrr %0, 0x820"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // read = 0;
+    // write = 13;
+    // asm volatile(
+    //     "csrw 0x814, %1\n"
+    //     "csrr %0, 0x814"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // read = 0;
+    // write = 1;
+    // asm volatile(
+    //     "csrw 0x824, %1\n"
+    //     "csrr %0, 0x824"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // read = 0;
+    // write = 10;
+    // asm volatile(
+    //     "csrw 0x818, %1\n"
+    //     "csrr %0, 0x818"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
+    // read = 0;
+    // write = 9;
+    // asm volatile(
+    //     "csrw 0x81c, %1\n"
+    //     "csrr %0, 0x81c"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
+
 
     for ( i = 0; i < size; i++ )
         values[i] = 0;
