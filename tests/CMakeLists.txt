@@ -92,6 +92,7 @@ add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
+add_executable(prefetcher prefetcher.c)
 
 #################################
 # Disassembly
@@ -131,6 +132,7 @@ add_dump_target(hello)
 add_dump_target(mt-hello)
 add_dump_target(symmetric)
 add_dump_target(read_counters)
+add_dump_target(prefetcher)
 
 # add custom include
 target_include_directories(read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
