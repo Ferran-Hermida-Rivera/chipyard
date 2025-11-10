@@ -94,6 +94,24 @@ void read_start()
     start[12] = read_csr(hpmcounter13);
 }
 
+void store_start(unsigned long long *store)
+{
+    store[0] = read_csr(cycle);
+    store[1] = read_csr(instret);
+    store[2] = read_csr(hpmcounter3);
+    store[3] = read_csr(hpmcounter4);
+    store[4] = read_csr(hpmcounter5);
+    store[5] = read_csr(hpmcounter6);
+    store[6] = read_csr(hpmcounter7);
+    store[7] = read_csr(hpmcounter8);
+    store[8] = read_csr(hpmcounter9);
+    store[9] = read_csr(hpmcounter10);
+    store[10] = read_csr(hpmcounter11);
+    store[11] = read_csr(hpmcounter12);
+    store[12] = read_csr(hpmcounter13);
+}
+
+
 /* Read final values of counters. */
 void read_end()
 {
@@ -112,6 +130,23 @@ void read_end()
     end[12] = read_csr(hpmcounter13);
 }
 
+void store_end(unsigned long long *store)
+{
+    store[0] = read_csr(cycle);
+    store[1] = read_csr(instret);
+    store[2] = read_csr(hpmcounter3);
+    store[3] = read_csr(hpmcounter4);
+    store[4] = read_csr(hpmcounter5);
+    store[5] = read_csr(hpmcounter6);
+    store[6] = read_csr(hpmcounter7);
+    store[7] = read_csr(hpmcounter8);
+    store[8] = read_csr(hpmcounter9);
+    store[9] = read_csr(hpmcounter10);
+    store[10] = read_csr(hpmcounter11);
+    store[11] = read_csr(hpmcounter12);
+    store[12] = read_csr(hpmcounter13);
+}
+
 unsigned int nearest_power_of_two(unsigned int x)
 {
     unsigned int r = 1;
@@ -125,8 +160,8 @@ void dump_counters(unsigned int corewidth, unsigned int retirewidth, unsigned in
     unsigned int corewidthbits = nearest_power_of_two(corewidth);
     unsigned int retirewidthbits = nearest_power_of_two(retirewidth);
     unsigned int issuewidthbits = nearest_power_of_two(issuewidth);
-    printf("%s: %lu\n", "Cycle",             end[0]);
-    printf("%s: %lu\n", "Int Ret",           end[1]);
+    printf("%s: %lu\n", "Cycle",             end[0]-start[0]);
+    printf("%s: %lu\n", "Int Ret",           end[1]-start[1]);
     printf("%s: %lu\n", "Branch Mispredict", end[2]-start[2]);
     printf("%s: %lu\n", "Flush",             end[3]-start[3]);
     printf("%s: %lu\n", "I$ Miss",           end[4]-start[4]);
@@ -141,4 +176,25 @@ void dump_counters(unsigned int corewidth, unsigned int retirewidth, unsigned in
 
 }
 
-#endif /*PMU_DEFS_H_*/
+vgoid dump_counters_stored(unsigned int corewidth, unsigned int retirewidth, unsigned int issuewidth,
+                            unsigned long long *start_vals, unsigned long long *end_vals)
+{
+    unsigned int corewidthbits = nearest_power_of_two(corewidth);
+    unsigned int retirewidthbits = nearest_power_of_two(retirewidth);
+    unsigned int issuewidthbits = nearest_power_of_two(issuewidth);
+    printf("%s: %lu\n", "Cycle",             end_vals[0]-start_vals[0]);
+    printf("%s: %lu\n", "Int Ret",           end_vals[1]-start_vals[1]);
+    printf("%s: %lu\n", "Branch Mispredict", end_vals[2]-start_vals[2]);
+    printf("%s: %lu\n", "Flush",             end_vals[3]-start_vals[3]);
+    printf("%s: %lu\n", "I$ Miss",           end_vals[4]-start_vals[4]);
+    printf("%s: %lu\n", "D$ Miss",           end_vals[5]-start_vals[5]);
+    printf("%s: %lu\n", "I$ Blocked",        end_vals[6]-start_vals[6]);
+    printf("%s: %lu\n", "Recovering",        end_vals[7]-start_vals[7]);
+    printf("%s: %lu\n", "Uops Retired",     (end_vals[8]-start_vals[8]) * retirewidthbits);
+    printf("%s: %lu\n", "Fence Retired",    (end_vals[9]-start_vals[9]) * retirewidthbits);
+    printf("%s: %lu\n", "D$ blocked",       (end_vals[10]-start_vals[10]) * retirewidthbits);
+    printf("%s: %lu\n", "Fetch Bubble",     (end_vals[11]-start_vals[11]) * corewidthbits);
+    printf("%s: %lu\n", "Uops Issued",      (end_vals[12]-start_vals[12]) * issuewidthbits);
+}
+
+#end_valsif /*PMU_DEFS_H_*/
