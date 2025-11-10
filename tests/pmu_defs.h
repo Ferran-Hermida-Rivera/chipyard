@@ -112,24 +112,6 @@ void store_start(unsigned long long *store)
 }
 
 
-void store_start(unsigned long long *store)
-{
-    store[0] = read_csr(cycle);
-    store[1] = read_csr(instret);
-    store[2] = read_csr(hpmcounter3);
-    store[3] = read_csr(hpmcounter4);
-    store[4] = read_csr(hpmcounter5);
-    store[5] = read_csr(hpmcounter6);
-    store[6] = read_csr(hpmcounter7);
-    store[7] = read_csr(hpmcounter8);
-    store[8] = read_csr(hpmcounter9);
-    store[9] = read_csr(hpmcounter10);
-    store[10] = read_csr(hpmcounter11);
-    store[11] = read_csr(hpmcounter12);
-    store[12] = read_csr(hpmcounter13);
-}
-
-
 /* Read final values of counters. */
 void read_end()
 {
@@ -146,23 +128,6 @@ void read_end()
     end[10] = read_csr(hpmcounter11);
     end[11] = read_csr(hpmcounter12);
     end[12] = read_csr(hpmcounter13);
-}
-
-void store_end(unsigned long long *store)
-{
-    store[0] = read_csr(cycle);
-    store[1] = read_csr(instret);
-    store[2] = read_csr(hpmcounter3);
-    store[3] = read_csr(hpmcounter4);
-    store[4] = read_csr(hpmcounter5);
-    store[5] = read_csr(hpmcounter6);
-    store[6] = read_csr(hpmcounter7);
-    store[7] = read_csr(hpmcounter8);
-    store[8] = read_csr(hpmcounter9);
-    store[9] = read_csr(hpmcounter10);
-    store[10] = read_csr(hpmcounter11);
-    store[11] = read_csr(hpmcounter12);
-    store[12] = read_csr(hpmcounter13);
 }
 
 void store_end(unsigned long long *store)

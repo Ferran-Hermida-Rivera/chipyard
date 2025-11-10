@@ -54,6 +54,18 @@ static inline void super_barrier() {
     asm volatile("fence iorw, iorw" ::: "memory");
     asm volatile("fence.i" ::: "memory");
 }
+// Helper to measure stores to a 2D array with PMU
+static void measure_store_init(volatile uint32_t arr[2][2048],
+                              unsigned long long start[], unsigned long long end[]) {
+    super_barrier();
+    store_start(start);
+    for (ssize_t i = 0; i < 2048; ++i) {
+        arr[0][i] = i;
+        arr[1][i] = i;
+    }
+    store_end(end);
+    super_barrier();
+}
 
 /*
  * --- Reconstructed main() Function ---
@@ -66,6 +78,8 @@ int main(void) {
     static volatile int64_t  acc;            // Base at 0x80001f80
     uint64_t cycle_i, cycle_e;
 
+    unsigned long long start_x[MAX_PMU_COUNT];
+    unsigned long long end_x[MAX_PMU_COUNT];
     unsigned long long start_a[MAX_PMU_COUNT];
     unsigned long long end_a[MAX_PMU_COUNT];
     unsigned long long start_b[MAX_PMU_COUNT];
@@ -77,31 +91,13 @@ int main(void) {
     //fence_i();
     config();
     //dump_config();
-    for (ssize_t i = 0; i < 2048; ++i) {
-        data_x[0][i] = i; 
-        data_x[1][i] = i;
-    }
+    measure_store_init(data_x, start_x, end_x);
     
     write_csr_834(0);
-    super_barrier();
-    store_start(start_a);
-    for (ssize_t i = 0; i < 2048; ++i) {
-        data_b[0][i] = i;
-        data_b[1][i] = i;
-    }
-    store_end(end_a);
-    super_barrier();
-
+    measure_store_init(data_a, start_a, end_a);
 
     write_csr_834(1);
-    super_barrier();
-    store_start(start_b);
-    for (ssize_t i = 0; i < 2048; ++i) {
-        data_b[0][i] = i;
-        data_b[1][i] = i;
-    }
-    store_end(end_b);
-    super_barrier();
+    measure_store_init(data_b, start_b, end_b);
 
 
     printf("=====================================\n");
