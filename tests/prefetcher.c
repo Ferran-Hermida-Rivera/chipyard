@@ -107,7 +107,7 @@ int main(void) {
 
 
     printf("=====================================\n");
-    printf("DCache Prefetch Disabled\n");
+    printf("DCache Prefetch Enabled\n");
     printf("=====================================\n\n");
     dump_counters_stored(2, 2, 4, start_b, end_b);
 
