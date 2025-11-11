@@ -55,8 +55,8 @@ if(BUILD_FOR_LINUX)
     set(ARCH_FLAGS      -march=${ARCH} -mabi=${ABI} -mcmodel=${CMODEL})
 
     add_compile_options(${ARCH_FLAGS})
-    add_compile_options(-std=gnu99)
-    add_compile_options(-O2 -Wall -Wextra)
+    add_compile_options(-O0 -std=gnu99)
+    add_compile_options(-Wall -Wextra)
     # Note: No -march, -mabi, or -mcmodel; the linux-gnu toolchain handles this.
     # The toolchain will automatically define __linux__ for your C code.
 
