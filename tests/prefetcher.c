@@ -54,17 +54,36 @@ static inline void super_barrier() {
     asm volatile("fence iorw, iorw" ::: "memory");
     asm volatile("fence.i" ::: "memory");
 }
+
+volatile uint64_t acc;
 // Helper to measure stores to a 2D array with PMU
-static void measure_store_init(volatile uint32_t arr[2][2048],
+static void measure_store_init(volatile uint32_t arr[2048],
                               unsigned long long start[], unsigned long long end[]) {
+    acc = 0;
+    ssize_t f = 0;
     super_barrier();
     store_start(start);
     for (ssize_t i = 0; i < 2048; ++i) {
-        arr[0][i] = i;
-        arr[1][i] = i;
+        f += arr[i];
     }
     store_end(end);
     super_barrier();
+    acc = f;
+}
+
+static void measure_cycles(volatile uint32_t arr[2048],
+                              ssize_t *cycle_start, ssize_t *cycle_end) {
+
+    acc = 0;
+    ssize_t f = 0;
+    super_barrier();
+    *cycle_start = rdcycle();
+    for (ssize_t i = 0; i < 2048; ++i) {
+        f += arr[i];
+    }
+    *cycle_end = rdcycle();
+    super_barrier();
+    acc = f;
 }
 
 /*
@@ -72,44 +91,56 @@ static void measure_store_init(volatile uint32_t arr[2][2048],
  */
 int main(void) {
 
-    static volatile uint32_t data_x[2][2048] __attribute__ ((aligned(64))); // Base at 0x80003000
-    static volatile uint32_t data_a[2][2048] __attribute__ ((aligned(64))); // Base at 0x80003000
-    static volatile uint32_t data_b[2][2048] __attribute__ ((aligned(64))); // Base at 0x80002000
-    static volatile int64_t  acc;            // Base at 0x80001f80
-    uint64_t cycle_i, cycle_e;
+    volatile uint32_t data_x[2048] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile uint32_t data_y[2048] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile uint32_t data_z[2048] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile uint32_t data_a[2048] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile uint32_t pad1[16] __attribute__ ((aligned(64)));
+    volatile uint32_t data_b[2048] __attribute__ ((aligned(64))); // Base at 0x80002000
+    volatile uint32_t pad2[16] __attribute__ ((aligned(64)));
+    //static volatile int64_t  acc;            // Base at 0x80001f80
+    //uint64_t cycle_i, cycle_e;
 
-    unsigned long long start_x[MAX_PMU_COUNT];
-    unsigned long long end_x[MAX_PMU_COUNT];
-    unsigned long long start_a[MAX_PMU_COUNT];
-    unsigned long long end_a[MAX_PMU_COUNT];
-    unsigned long long start_b[MAX_PMU_COUNT];
-    unsigned long long end_b[MAX_PMU_COUNT];
-    //fence_i();
-    //printf("prefethcer value: %ld\n", read_csr_834());
-    //printf("prefethcer value: %ld\n", read_csr_834());
-    //printf("prefethcer value: %ld\n", read_csr_834());
-    //fence_i();
-    config();
-    //dump_config();
-    measure_store_init(data_x, start_x, end_x);
+    //unsigned long long start_x[MAX_PMU_COUNT];
+    //unsigned long long end_x[MAX_PMU_COUNT];
+    //unsigned long long start_a[MAX_PMU_COUNT];
+    //unsigned long long end_a[MAX_PMU_COUNT];
+    //unsigned long long start_b[MAX_PMU_COUNT];
+    //unsigned long long end_b[MAX_PMU_COUNT];
+
     
-    write_csr_834(0);
-    measure_store_init(data_a, start_a, end_a);
-
+    ssize_t cycle_start_a, cycle_end_a, cycle_start_b, cycle_end_b;
+    //fence_i();
+    //printf("prefethcer value: %ld\n", read_csr_834());
+    //printf("prefethcer value: %ld\n", read_csr_834());
+    //printf("prefethcer value: %ld\n", read_csr_834());
+    //fence_i();
+    //config();
+    //dump_config();
+    // warmup!
+    measure_cycles(data_x, &cycle_start_a, &cycle_end_a);
+    measure_cycles(data_y, &cycle_start_a, &cycle_end_a);
+    measure_cycles(data_z, &cycle_start_a, &cycle_end_a);
+    
     write_csr_834(1);
-    measure_store_init(data_b, start_b, end_b);
+    measure_cycles(data_a, &cycle_start_a, &cycle_end_a);
+
+    write_csr_834(0);
+    measure_cycles(data_b, &cycle_start_b, &cycle_end_b);
 
 
-    printf("=====================================\n");
-    printf("DCache Prefetch Disabled\n");
-    printf("=====================================\n\n");
-    dump_counters_stored(2, 2, 4, start_a, end_a);
+    printf("Prefetcher enabled: %ld\n", cycle_end_a - cycle_start_a);
+    printf("Prefetcher disabled: %ld\n", cycle_end_b - cycle_start_b);
+    //printf("=====================================\n");
+    //printf("DCache Prefetch Disabled\n");
+    //printf("=====================================\n\n");
+    //dump_counters_stored(2, 2, 4, start_a, end_a);
 
 
-    printf("=====================================\n");
-    printf("DCache Prefetch Enabled\n");
-    printf("=====================================\n\n");
-    dump_counters_stored(2, 2, 4, start_b, end_b);
+    //printf("=====================================\n");
+    //printf("DCache Prefetch Enabled\n");
+    //printf("=====================================\n\n");
+    //dump_counters_stored(2, 2, 4, start_b, end_b);
 
     //fence_i();
     //
