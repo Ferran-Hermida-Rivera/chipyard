@@ -8,12 +8,16 @@
 #endif
 
 #ifdef __linux__
-#define UNITS "ns"
+#define UNITS "cycles"
 
 static inline void write_csr_834(uint64_t val) { (void)val; }
 static inline ssize_t read_csr_834(void) { return -1; }
 static inline uint64_t rdcycle(void)
 {
+    uint64_t value;
+    asm volatile ("rdcycle %0" : "=r"(value));
+    return value;
+    // -------------------
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
@@ -87,6 +91,7 @@ int main(void) {
     measure_cycles(data_y, &cycle_start_a, &cycle_end_a);
     measure_cycles(data_z, &cycle_start_a, &cycle_end_a);
 
+    write_csr_834(0);
     measure_cycles(data_a, &cycle_start_a, &cycle_end_a);
     printf("Prefetcher.c execution %s: %ld\n", UNITS, (long)(cycle_end_a - cycle_start_a));
 
