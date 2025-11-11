@@ -10,20 +10,20 @@ static inline uint64_t rdcycle() {
 
 #define NUM_JUMPS 32
 
-void jumparound_benchmark() {
+int jumparound_benchmark() {
 	volatile int sink = 0;
 	uint64_t start, end;
 	void *targets[NUM_JUMPS];
 
-    int read = -1;
-    int write = 0;
-    asm volatile(
-        "csrw 0x830, %1\n"
-        "csrr %0, 0x830"
-        : "=r" (read)
-        : "r" (write)
-    );
-    printf("read back from the CSR: %x\n", read);
+    // int read = -1;
+    // int write = 0;
+    // asm volatile(
+    //     "csrw 0x830, %1\n"
+    //     "csrr %0, 0x830"
+    //     : "=r" (read)
+    //     : "r" (write)
+    // );
+    // printf("read back from the CSR: %x\n", read);
 
 	// #define TARGET_ADDR(i) &&target_##i
 	// for (int i = 0; i < NUM_JUMPS; ++i) {
@@ -179,13 +179,83 @@ void jumparound_benchmark() {
 	
 
 	end = rdcycle();
-	printf("jumparound: %ld cycles for 100 jumps\n", (long)(end - start));
-	if (sink == 42) printf("sink\n");
+    return end - start;
+	// printf("jumparound: %ld cycles for 100 jumps\n", (long)(end - start));
+	// if (sink == 42) printf("sink\n");
 }
 
 int main(void) {
-	printf("jumparound microbenchmark: stress icache next-line prefetch\n");
-	jumparound_benchmark();
+	// printf("jumparound microbenchmark: stress icache next-line prefetch\n");
+
+    
+    int read = -1;
+    int write = 0;
+    asm volatile(
+        "fence.i\n"
+        
+        "csrw 0x830, %1\n"
+        "csrr %0, 0x830"
+        : "=r" (read)
+        : "r" (write)
+    );
+    // printf("read back from the CSR: %x\n", read);
+
+	int warmup = jumparound_benchmark();
+
+    asm volatile(
+        "csrw 0x830, %1\n"
+        "csrr %0, 0x830"
+        : "=r" (read)
+        : "r" (write)
+    );
+
+    asm volatile(
+        "fence.i\n"
+        );
+	int res1 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );
+	int res2 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );
+	int res3 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );
+
+
+    read = -1;
+    write = 1;
+    asm volatile(
+        "csrw 0x830, %1\n"
+        "csrr %0, 0x830"
+        : "=r" (read)
+        : "r" (write)
+    );
+	
+    int res10 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );	
+    int res11 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );	
+    int res12 = jumparound_benchmark();
+    asm volatile(
+        "fence.i\n"
+        );
+
+    printf("Res1: %d\n", res1);
+    printf("Res2: %d\n", res2);
+    printf("Res3: %d\n", res3);
+
+    printf("Res10: %d\n", res10);
+    printf("Res11: %d\n", res11);
+    printf("Res12: %d\n", res12);
+
 	return 0;
 }
 
