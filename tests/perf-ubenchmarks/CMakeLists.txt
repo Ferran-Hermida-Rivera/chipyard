@@ -117,6 +117,8 @@ endif()
 
 # Add target to generate executable
 add_executable(prefetcher prefetcher.c)
+add_executable(prefetcher-stride prefetcher-stride.c)
+add_executable(prefetcher-stride-localized prefetcher-stride-localized.c)
 
 # Add a target to generate all disassemblies
 add_custom_target(dump ALL)
