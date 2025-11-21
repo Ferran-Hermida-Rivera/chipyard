@@ -3,7 +3,7 @@
 	url = https://github.com/chipsalliance/rocket-chip-fpga-shells.git
 [submodule "generators/bar-fetchers"]
 	path = generators/bar-fetchers
-	url = https://github.com/ucb-bar/bar-fetchers.git
+	url = git@github.com:Ferran-Hermida-Rivera/bar-fetchers.git
 [submodule "generators/caliptra-aes-acc"]
 	path = generators/caliptra-aes-acc
 	url = https://github.com/ucb-bar/caliptra-aes-acc.git
