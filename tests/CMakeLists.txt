@@ -95,6 +95,7 @@ add_executable(jumparound jumparound.c)
 add_executable(prefetcher prefetcher.c)
 add_executable(parallel parallel.c)
 add_executable(stress_prefetcher stress_prefetcher.c)
+add_executable(csr csr.c)
 
 #################################
 # Disassembly
