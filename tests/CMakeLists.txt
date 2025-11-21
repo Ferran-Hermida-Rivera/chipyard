@@ -40,7 +40,7 @@ set(CMAKE_EXECUTABLE_SUFFIX            ".riscv")
 #################################
 
 # CPU architecture
-set(ARCH                "rv64imafd_zifencei")
+set(ARCH                "rv64imafd_zicsr_zifencei")
 set(ABI                 "lp64d")
 set(CMODEL              "medany")
 set(ARCH_FLAGS          -march=${ARCH} -mabi=${ABI} -mcmodel=${CMODEL})
@@ -93,6 +93,8 @@ add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
 add_executable(prefetcher prefetcher.c)
+add_executable(parallel parallel.c)
+add_executable(stress_prefetcher stress_prefetcher.c)
 
 #################################
 # Disassembly
@@ -133,6 +135,8 @@ add_dump_target(mt-hello)
 add_dump_target(symmetric)
 add_dump_target(read_counters)
 add_dump_target(prefetcher)
+add_dump_target(parallel)
+add_dump_target(stress_prefetcher)
 
 # add custom include
 target_include_directories(read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)

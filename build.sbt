@@ -299,7 +299,7 @@ lazy val icenet = withInitCheck((project in file("generators/icenet")), "icenet"
   .settings(commonSettings)
 
 lazy val boom = freshProject("boom", file("generators/boom"))
-  .dependsOn(rocketchip)
+  .dependsOn(rocketchip, barf)
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(commonSettings)
 
