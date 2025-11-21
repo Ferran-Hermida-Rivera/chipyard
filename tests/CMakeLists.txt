@@ -87,12 +87,14 @@ add_executable(gcd gcd.c)
 add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
+add_executable(read_counters read_counters.c)
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
+add_executable(prefetcher prefetcher.c)
 add_executable(parallel parallel.c)
-add_executable(stress_prefetcher stress_prefetcher.c)
+add_executable(stress-prefetcher stress-prefetcher.c)
 
 #################################
 # Disassembly
@@ -132,13 +134,23 @@ add_dump_target(hello)
 add_dump_target(mt-hello)
 add_dump_target(symmetric)
 add_dump_target(read_counters)
+add_dump_target(csr)
+add_dump_target(bin-search)
+add_dump_target(thousandadds)
+add_dump_target(jumparound)
 add_dump_target(prefetcher)
 add_dump_target(parallel)
-add_dump_target(stress_prefetcher)
+add_dump_target(stress-prefetcher)
 
 # add custom include
-target_include_directories(read_counters PRIVATE ../toolchains/riscv-tools/riscv-pk/machine)
-
+target_include_directories(read_counters PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(csr PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(bin-search PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(thousandadds PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(jumparound PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(prefetcher PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(parallel PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
+target_include_directories(stress-prefetcher PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
 # Add custom command to generate spiflash.img from spiflash.py
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/spiflash.img
