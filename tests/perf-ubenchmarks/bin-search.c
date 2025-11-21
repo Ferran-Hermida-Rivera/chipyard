@@ -77,16 +77,6 @@ int main()
     // );
     // printf("read back from the CSR: %x\n", read);
 
-    // int read = 0;
-    // int write = 4;
-    // asm volatile(
-    //     "csrw 0x820, %1\n"
-    //     "csrr %0, 0x820"
-    //     : "=r" (read)
-    //     : "r" (write)
-    // );
-    // printf("read back from the CSR: %x\n", read);
-
 
     int size = 10;
     int values[size];
@@ -133,15 +123,15 @@ int main()
     // );
     // printf("read back from the CSR: %x\n", read);
 
-    // read = 0;
-    // write = 1;
-    // asm volatile(
-    //     "csrw 0x824, %1\n"
-    //     "csrr %0, 0x824"
-    //     : "=r" (read)
-    //     : "r" (write)
-    // );
-    // printf("read back from the CSR: %x\n", read);
+    int read = 0;
+    int write = 1;
+    asm volatile(
+        "csrw 0x824, %1\n"
+        "csrr %0, 0x824"
+        : "=r" (read)
+        : "r" (write)
+    );
+    printf("read back from the CSR: %x\n", read);
 
     // read = 0;
     // write = 10;

@@ -121,6 +121,8 @@ add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
+add_executable(prefetcher-stride prefetcher-stride.c)
+add_executable(prefetcher-stride-localized prefetcher-stride-localized.c)
 
 # Add a target to generate all disassemblies
 add_custom_target(dump ALL)
@@ -142,6 +144,8 @@ add_dump_target(csr)
 add_dump_target(bin-search)
 add_dump_target(thousandadds)
 add_dump_target(jumparound)
+add_dump_target(prefetcher-stride)
+add_dump_target(prefetcher-stride-localized)
 
 
 #################################
