@@ -87,15 +87,12 @@ add_executable(gcd gcd.c)
 add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
-add_executable(read_counters read_counters.c)
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
-add_executable(prefetcher prefetcher.c)
 add_executable(parallel parallel.c)
 add_executable(stress_prefetcher stress_prefetcher.c)
-add_executable(csr csr.c)
 
 #################################
 # Disassembly
