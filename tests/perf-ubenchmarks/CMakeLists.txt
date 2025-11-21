@@ -117,6 +117,10 @@ endif()
 
 # Add target to generate executable
 add_executable(prefetcher prefetcher.c)
+add_executable(csr csr.c)
+add_executable(bin-search bin-search.c)
+add_executable(thousandadds thousandadds.c)
+add_executable(jumparound jumparound.c)
 
 # Add a target to generate all disassemblies
 add_custom_target(dump ALL)
@@ -134,6 +138,10 @@ function(add_dump_target target_name)
 endfunction()
 
 add_dump_target(prefetcher)
+add_dump_target(csr)
+add_dump_target(bin-search)
+add_dump_target(thousandadds)
+add_dump_target(jumparound)
 
 
 #################################
