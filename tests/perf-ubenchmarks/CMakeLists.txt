@@ -147,6 +147,13 @@ add_dump_target(jumparound)
 add_dump_target(prefetcher-stride)
 add_dump_target(prefetcher-stride-localized)
 
+target_include_directories(csr                         PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(bin-search                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(thousandadds                PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(jumparound                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(prefetcher                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(prefetcher-stride           PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(prefetcher-stride-localized PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 
 #################################
 # spiflash.img target (Unchanged)
