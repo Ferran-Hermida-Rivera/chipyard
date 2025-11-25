@@ -170,42 +170,6 @@ void dump_config()
     printf("mhpmevent13: 0x%lx\n", read_csr(mhpmevent13));
 }
 
-/* Read initial values for reference. */
-void read_start()
-{
-    start[0] = read_csr(cycle);
-    start[1] = read_csr(instret);
-    start[2] = read_csr(hpmcounter3);
-    start[3] = read_csr(hpmcounter4);
-    start[4] = read_csr(hpmcounter5);
-    start[5] = read_csr(hpmcounter6);
-    start[6] = read_csr(hpmcounter7);
-    start[7] = read_csr(hpmcounter8);
-    start[8] = read_csr(hpmcounter9);
-    start[9] = read_csr(hpmcounter10);
-    start[10] = read_csr(hpmcounter11);
-    start[11] = read_csr(hpmcounter12);
-    start[12] = read_csr(hpmcounter13);
-}
-
-/* Read final values of counters. */
-void read_end()
-{
-    end[0] = read_csr(cycle);
-    end[1] = read_csr(instret);
-    end[2] = read_csr(hpmcounter3);
-    end[3] = read_csr(hpmcounter4);
-    end[4] = read_csr(hpmcounter5);
-    end[5] = read_csr(hpmcounter6);
-    end[6] = read_csr(hpmcounter7);
-    end[7] = read_csr(hpmcounter8);
-    end[8] = read_csr(hpmcounter9);
-    end[9] = read_csr(hpmcounter10);
-    end[10] = read_csr(hpmcounter11);
-    end[11] = read_csr(hpmcounter12);
-    end[12] = read_csr(hpmcounter13);
-}
-
 static inline void store_counter(unsigned long long *store) __attribute__((always_inline));
 static inline void store_counter(unsigned long long *store)
 {
@@ -230,27 +194,6 @@ unsigned int nearest_power_of_two(unsigned int x)
     while (r < x)
         r <<= 1;
     return r;
-}
-
-void dump_counters(unsigned int corewidth, unsigned int retirewidth, unsigned int issuewidth)
-{
-    unsigned int corewidthbits = nearest_power_of_two(corewidth);
-    unsigned int retirewidthbits = nearest_power_of_two(retirewidth);
-    unsigned int issuewidthbits = nearest_power_of_two(issuewidth);
-    printf("%s: %lu\n", "Cycle",             end[0]-start[0]);
-    printf("%s: %lu\n", "Int Ret",           end[1]-start[1]);
-    printf("%s: %lu\n", "Branch Mispredict", end[2]-start[2]);
-    printf("%s: %lu\n", "Flush",             end[3]-start[3]);
-    printf("%s: %lu\n", "I$ Miss",           end[4]-start[4]);
-    printf("%s: %lu\n", "D$ Miss",           end[5]-start[5]);
-    printf("%s: %lu\n", "I$ Blocked",        end[6]-start[6]);
-    printf("%s: %lu\n", "Recovering",        end[7]-start[7]);
-    printf("%s: %lu\n", "Uops Retired",     (end[8]-start[8]) * retirewidthbits);
-    printf("%s: %lu\n", "Fence Retired",    (end[9]-start[9]) * retirewidthbits);
-    printf("%s: %lu\n", "D$ blocked",       (end[10]-start[10]) * retirewidthbits);
-    printf("%s: %lu\n", "Fetch Bubble",     (end[11]-start[11]) * corewidthbits);
-    printf("%s: %lu\n", "Uops Issued",      (end[12]-start[12]) * issuewidthbits);
-
 }
 
 void dump_counters_stored(unsigned int corewidth, unsigned int retirewidth, unsigned int issuewidth,

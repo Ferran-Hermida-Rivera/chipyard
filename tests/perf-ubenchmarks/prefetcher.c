@@ -64,9 +64,15 @@ int main(void) {
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, LOCALIZEDSTRIDED_DCACHE_PREFETCHERS);
     measure_cycles(data_3, start_3, end_3);
 
+    printf("Ubenchmark: SequentialArraySum\n");
+
+    printf("KnobConfig: D$ Prefetch Disabled\n");
     dump_counters_stored(4, 4, 8, start_0, end_0);
+    printf("KnobConfig: D$ NL Prefetch Enabled\n");
     dump_counters_stored(4, 4, 8, start_1, end_1);
+    printf("KnobConfig: D$ MultiNL Prefetch Enabled\n");
     dump_counters_stored(4, 4, 8, start_2, end_2);
+    printf("KnobConfig: D$ LocalizedStrided Prefetch Enabled\n");
     dump_counters_stored(4, 4, 8, start_3, end_3);
 
     return 0;

@@ -1,5 +1,8 @@
 
 #include <stdio.h>
+#include "pmu.h"
+#include "riscv.h"
+#include "csr_defs.h"
 #include "pmu_defs.h"
 
 #define TEN_ADDS "add t0, t0, t1\n" \
@@ -21,18 +24,24 @@
 
 int main(void)
 {
-    printf("Config perf counters\n");
+    unsigned long long start_0[MAX_PMU_COUNT];
+    unsigned long long end_0[MAX_PMU_COUNT];
 
+    unsigned long long start_1[MAX_PMU_COUNT];
+    unsigned long long end_1[MAX_PMU_COUNT];
+
+    printf("Config perf counters\n");
     config();
-    dump_config();
     
     printf("=====================================\n");
     printf("ICache Prefetch Enabled\n");
     printf("=====================================\n\n");
 
-    printf("Start adding 500 to itself 1000 times\n");
+    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, ENABLE);
 
-    read_start(); // read perf counters
+    printf("Start adding 500 to itself 2000 times\n");
+
+    store_counter(start_0); // read perf counters
 
     int sum = 0;
     int constant = 500;
@@ -41,13 +50,13 @@ int main(void)
         "li t0, 0\n"
         "mv t1, %1\n"
         THOUSAND_ADDS
+        THOUSAND_ADDS
         "mv %0, t0\n"
         : "=r" (sum)
         : "r" (constant)
     );
 
-    read_end();
-    dump_counters(4, 4, 8); // configs are specific to megaboom
+    store_counter(end_0);
 
     printf("Result: %d\n", sum);
 
@@ -55,17 +64,11 @@ int main(void)
     printf("ICache Prefetch Disabled\n");
     printf("=====================================\n\n");
 
-    int read = -1;
-    int write = 0;
-    asm volatile(
-        "csrw 0x830, %1\n"
-        "csrr %0, 0x830"
-        : "=r" (read)
-        : "r" (write)
-    );
-    printf("read back from the CSR: %x\n", read);
+    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, DISABLE);
 
-    read_start(); // read perf counters
+    printf("Start adding 500 to itself 2000 times\n");
+
+    store_counter(start_1); // read perf counters
 
     sum = 0;
     constant = 500;
@@ -74,14 +77,21 @@ int main(void)
         "li t0, 0\n"
         "mv t1, %1\n"
         THOUSAND_ADDS
+        THOUSAND_ADDS
         "mv %0, t0\n"
         : "=r" (sum)
         : "r" (constant)
     );
 
-    read_end();
-    dump_counters(4, 4, 8); // configs are specific to megaboom
+    store_counter(end_1);
 
     printf("Result: %d\n", sum);
+
+    printf("Ubenchmark: Thousandadds\n");
+    printf("KnobConfig: I$ Prefetch Enabled\n");
+    dump_counters_stored(4, 4, 8, start_0, end_0); // configs are specific to megaboom
+
+    printf("KnobConfig: I$ Prefetch Disabled\n");
+    dump_counters_stored(4, 4, 8, start_1, end_1); // configs are specific to megaboom
 
 }
