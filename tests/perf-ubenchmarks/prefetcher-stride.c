@@ -35,6 +35,8 @@ static void measure_cycles(volatile strider_t arr[256],
 
 int main(void) {
     printf("Begin execution\n");
+
+    config(); 
     // store_counter take 300-400 cycles, need to amortize it over data size
     static volatile strider_t data_x[256] __attribute__ ((aligned(64))); // Base at 0x80003000
     volatile uint32_t pad2[16] __attribute__ ((aligned(64)));
