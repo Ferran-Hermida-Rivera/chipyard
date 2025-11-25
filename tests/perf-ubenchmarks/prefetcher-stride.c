@@ -2,57 +2,12 @@
 #include <stdio.h>
 #include <stddef.h>
 
-#ifdef __linux__
-#include <time.h>
-#else
-#endif
+#include "pmu.h"
+#include "riscv.h"
+#include "csr_defs.h"
+#include "pmu_defs.h"
 
-#ifdef __linux__
 #define UNITS "cycles"
-
-static inline void write_csr_834(uint64_t val) { (void)val; }
-static inline ssize_t read_csr_834(void) { return -1; }
-static inline uint64_t rdcycle(void)
-{
-    uint64_t value;
-    asm volatile ("rdcycle %0" : "=r"(value));
-    return value;
-    // -------------------
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
-}
-//static inline void fence_i(void) { asm volatile ("" ::: "memory"); }
-//static inline void super_barrier(void) { asm volatile ("" ::: "memory"); }
-#else
-#define UNITS "cycles"
-
-static inline void write_csr_834(uint64_t val) {
-    asm volatile ("csrw 0x834, %0" : : "r"(val));
-}
-
-static inline ssize_t read_csr_834(void) {
-    ssize_t read = -1;
-    asm volatile("csrr %0, 0x834" : "=r" (read));
-    return read;
-}
-
-static inline uint64_t rdcycle(void)
-{
-    uint64_t value;
-    asm volatile ("rdcycle %0" : "=r"(value));
-    return value;
-}
-#endif
-
-static inline void fence_i(void) {
-    asm volatile ("fence.i");
-}
-
-static inline void super_barrier(void) {
-    asm volatile("fence iorw, iorw" ::: "memory");
-    asm volatile("fence.i" ::: "memory");
-}
 
 volatile uint64_t acc;
 
@@ -62,45 +17,53 @@ typedef struct strider
     uint32_t m_data [STRIDE_IN_BYTES/sizeof(uint32_t)];
 } strider_t;
 
-static void measure_cycles(volatile strider_t arr[128],
-                              ssize_t *cycle_start, ssize_t *cycle_end)
+static void measure_cycles(volatile strider_t arr[256],
+                            unsigned long long start[MAX_PMU_COUNT],
+                            unsigned long long end[MAX_PMU_COUNT])
 {
     acc = 0;
     ssize_t f = 0;
-    super_barrier();
-    *cycle_start = rdcycle();
-    for (ssize_t i = 0; i < 128; ++i) {
+    SUPER_BARRIER();
+    store_counter(start);
+    for (ssize_t i = 0; i < 256; ++i) {
         f += arr[i].m_data[0];
     }
-    *cycle_end = rdcycle();
-    super_barrier();
+    store_counter(end);
+    SUPER_BARRIER();
     acc = f;
 }
 
 int main(void) {
     printf("Begin execution\n");
-
-    volatile strider_t data_x[128] __attribute__ ((aligned(64))); // Base at 0x80003000
-    volatile strider_t data_y[128] __attribute__ ((aligned(64))); // Base at 0x80003000
-    volatile strider_t data_z[128] __attribute__ ((aligned(64))); // Base at 0x80003000
+    // store_counter take 300-400 cycles, need to amortize it over data size
+    static volatile strider_t data_x[256] __attribute__ ((aligned(64))); // Base at 0x80003000
     volatile uint32_t pad2[16] __attribute__ ((aligned(64)));
-    volatile strider_t data_a[128] __attribute__ ((aligned(64))); // Base at 0x80003000
+    static volatile strider_t data_a[256] __attribute__ ((aligned(64))); // Base at 0x80003000
     volatile uint32_t pad1[16] __attribute__ ((aligned(64)));
+    static volatile strider_t data_b[256] __attribute__ ((aligned(64))); // Base at 0x80003000
+    unsigned long long start_0[MAX_PMU_COUNT];
+    unsigned long long end_0[MAX_PMU_COUNT];
+
+    unsigned long long start_1[MAX_PMU_COUNT];
+    unsigned long long end_1[MAX_PMU_COUNT];
     
-    ssize_t cycle_start_a, cycle_end_a, cycle_start_b, cycle_end_b;
+    ssize_t warm_up, cycle_start_a, cycle_end_a, cycle_start_b, cycle_end_b;
 
-    //initialize_vector(data_x, 2048);
-    //initialize_vector(data_y, 2048);
-    //initialize_vector(data_z, 2048);
-    //initialize_vector(data_a, 2048);
+    // warm up icache
+    measure_cycles(data_x, &warm_up, &warm_up);
 
-    measure_cycles(data_x, &cycle_start_a, &cycle_end_a);
-    measure_cycles(data_y, &cycle_start_a, &cycle_end_a);
-    measure_cycles(data_z, &cycle_start_a, &cycle_end_a);
 
-    // write_csr_834(0);
-    measure_cycles(data_a, &cycle_start_a, &cycle_end_a);
-    printf("Prefetcher.c execution %s: %ld\n", UNITS, (long)(cycle_end_a - cycle_start_a));
+    WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, NO_DCACHE_PREFETCHERS);
+    measure_cycles(data_a, start_0, end_0);
+
+    WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, STRIDE_DCACHE_PREFETCHERS);
+    measure_cycles(data_b, start_1, end_1);
+
+    printf("Ubenchmark: Stride Prefetcher\n");
+    printf("KnobConfig: D$ Prefetch Disabled\n");
+    dump_counters_stored(4, 4, 8, start_0, end_0);
+    printf("KnobConfig: D$ Stride Prefetch Enabled\n");
+    dump_counters_stored(4, 4, 8, start_1, end_1);
 
     return 0;
 }

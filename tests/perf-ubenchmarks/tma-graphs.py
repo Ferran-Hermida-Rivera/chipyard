@@ -10,6 +10,7 @@ log_path = '/scratch/acui/chipyard-saws/sims/verilator/results.log'
 # Here are how the variables are correlated to the log outputs:
 # C_cycle -> Cycle
 # corewidth -> 8
+# C_fetch -> Fetch Bubble
 # C_flush -> Flush
 # C_bm -> Branch Mispredict
 # C_fence -> Fence Retired
