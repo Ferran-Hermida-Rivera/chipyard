@@ -86,7 +86,7 @@ add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
 add_executable(parallel parallel.c)
-add_executable(stress_prefetcher stress_prefetcher.c)
+add_executable(l2-policy l2-policy.c)
 
 #################################
 # Disassembly
@@ -126,7 +126,7 @@ add_dump_target(hello)
 add_dump_target(mt-hello)
 add_dump_target(symmetric)
 add_dump_target(parallel)
-add_dump_target(stress_prefetcher)
+add_dump_target(l2-policy)
 
 
 # Add custom command to generate spiflash.img from spiflash.py
