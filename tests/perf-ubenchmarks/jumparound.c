@@ -19,6 +19,7 @@ void jumparound_benchmark(unsigned long long start[MAX_PMU_COUNT],
             if (!zero) { goto target_##i; } \
         target_$##i: \
             asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;"); \
+            asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;"); \
         target_##i:
 
     #define PAD_LIST \
@@ -69,13 +70,14 @@ int main(void) {
     printf("Config perf counters\n");
     config();
     
+    jumparound_benchmark(warmup, warmup);
+
     printf("=====================================\n");
     printf("ICache Prefetch Enabled\n");
     printf("=====================================\n\n");
 
-    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, ENABLE);
+    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, DISABLE);
 
-	jumparound_benchmark(warmup, warmup);
 
 	jumparound_benchmark(start_0, end_0);
 
@@ -84,15 +86,15 @@ int main(void) {
     printf("ICache Prefetch Disabled\n");
     printf("=====================================\n\n");
 
-    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, DISABLE);
+    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, ENABLE);
 
     jumparound_benchmark(start_1, end_1);
 
     printf("Ubenchmark: Jumparound\n");
-    printf("KnobConfig: I$ Prefetch Enabled\n");
+    printf("KnobConfig: I$ Prefetch Disabled\n");
     dump_counters_stored(4, 4, 8, start_0, end_0); // configs are specific to megaboom
 
-    printf("KnobConfig: I$ Prefetch Disabled\n");
+    printf("KnobConfig: I$ Prefetch Enabled\n");
     dump_counters_stored(4, 4, 8, start_1, end_1); // configs are specific to megaboom
 
 	return 0;
