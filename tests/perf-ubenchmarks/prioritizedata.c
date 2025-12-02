@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "pmu_defs.h"
 
+#include "l2-policy.h"
+
 #define CACHE_SIZE (64 * 1024) // 64 KB
 #define ARRAY_SIZE (CACHE_SIZE / sizeof(int))
 
@@ -58,10 +60,15 @@ int main(void)
     unsigned long long end[MAX_PMU_COUNT];
     config();
 
+    ssize_t policy = read_policy();
+    policy = policy + 2;
+    write_policy(policy);
+    printf("Current L2 Policy: %ld\n", policy);
+
     printf("Begin bench\n");
 
-    store_counter(start);
     initBigArray();
+    store_counter(start);
     muchCode();
     uint64_t sum1 = bigArraySum();
     store_counter(end);
