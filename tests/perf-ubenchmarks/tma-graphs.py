@@ -4,8 +4,8 @@ import re
 
 # This script takes as input the following log file
 # Outputs of the ubenchmarks with performance counters collected should be in this log
-log_path = '/scratch/acui/chipyard-saws/sims/verilator/results.log'
-
+# log_path = '/scratch/acui/chipyard-saws/sims/verilator/results.log'
+log_path = '/scratch/jtoubes/chipyard-SAWS/sims/verilator/output/chipyard.harness.TestHarness.MegaBoomDistributedCountersConfig/jumparound.log'
 
 # Here are how the variables are correlated to the log outputs:
 # C_cycle -> Cycle
@@ -68,7 +68,7 @@ def parse_log_file(log_path):
     
     return ubenchmarks
 
-def compute_tma_metrics(counters, corewidth=8):
+def compute_tma_metrics(counters, corewidth=4):
     """Compute TMA metrics from performance counters."""
     # Map counters to variables
     C_cycle = counters['Cycle']
