@@ -133,6 +133,7 @@ add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
 add_executable(prefetcher-stride prefetcher-stride.c)
 add_executable(prefetcher-stride-localized prefetcher-stride-localized.c)
+add_executable(prioritizedata prioritizedata.c)
 
 # Add a target to generate all disassemblies
 add_custom_target(dump ALL)
@@ -159,6 +160,7 @@ add_dump_target(thousandadds)
 add_dump_target(jumparound)
 add_dump_target(prefetcher-stride)
 add_dump_target(prefetcher-stride-localized)
+add_dump_target(prioritizedata)
 
 target_include_directories(csr                         PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(bin-search                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
@@ -170,6 +172,7 @@ target_include_directories(sas-multinl                 PUBLIC ../toolchains/risc
 target_include_directories(sas-localizedstrided        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(prefetcher-stride           PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(prefetcher-stride-localized PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(prioritizedata              PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 
 #################################
 # spiflash.img target (Unchanged)

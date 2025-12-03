@@ -96,6 +96,7 @@ class MegaBoomDistributedCountersConfig extends Config(
   new chipyard.config.WithNPerfCounters(29) ++
   new boom.v3.common.HasPMUDistributedCounters ++
   new boom.v3.common.WithNMegaBooms(1) ++
+  new freechips.rocketchip.subsystem.WithInclusiveCache(nWays=8, capacityKB=64) ++
   new chipyard.config.AbstractConfig)
 
 class GigaBoomDistributedCountersConfig extends Config(
