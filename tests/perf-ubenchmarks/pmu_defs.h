@@ -103,7 +103,7 @@
 
 #define EN_MASK 0xFFFFFFFF
 #define EVT(n) 1UL << (n + 8)
-#define MAX_PMU_COUNT 13
+#define MAX_PMU_COUNT 14
 
 // Existing Event Sets
 #define EX_EVT 0x0UL
@@ -149,7 +149,8 @@ void config()
     write_csr(mhpmevent10, TMA_EVT_RETIRE_WIDTH | EVT(1)); // "Fence Retired"
     write_csr(mhpmevent11, TMA_EVT_RETIRE_WIDTH | EVT(2)); // "D$ blocked"
     write_csr(mhpmevent12, TMA_EVT_COREWIDTH    | EVT(0)); // "Fetch Bubble"
-    write_csr(mhpmevent13, TMA_EVT_ISSUE_WIDTH  | EVT(0)); // "Uops Issued
+    write_csr(mhpmevent13, TMA_EVT_ISSUE_WIDTH  | EVT(0)); // "Uops Issued"
+    write_csr(mhpmevent14, TMA_EVT_SINGLE| EVT(2));         // "Fetch Latency Bound"
 }
 
 void dump_config()
@@ -168,6 +169,7 @@ void dump_config()
     printf("mhpmevent11: 0x%lx\n", read_csr(mhpmevent11));
     printf("mhpmevent12: 0x%lx\n", read_csr(mhpmevent12));
     printf("mhpmevent13: 0x%lx\n", read_csr(mhpmevent13));
+    printf("mhpmevent14: 0x%lx\n", read_csr(mhpmevent14));
 }
 
 static inline void store_counter(unsigned long long *store) __attribute__((always_inline));
@@ -186,6 +188,7 @@ static inline void store_counter(unsigned long long *store)
     store[10] = read_csr(hpmcounter11);
     store[11] = read_csr(hpmcounter12);
     store[12] = read_csr(hpmcounter13);
+    store[13] = read_csr(hpmcounter14);
 }
 
 unsigned int nearest_power_of_two(unsigned int x)
@@ -196,6 +199,10 @@ unsigned int nearest_power_of_two(unsigned int x)
     return r;
 }
 
+// MegaBOOM:
+// corewidth = 4
+// retirewidth = 4
+// issuewidth = 8
 void dump_counters_stored(unsigned int corewidth, unsigned int retirewidth, unsigned int issuewidth,
                             unsigned long long *start_vals, unsigned long long *end_vals)
 {
@@ -216,6 +223,7 @@ void dump_counters_stored(unsigned int corewidth, unsigned int retirewidth, unsi
     printf("%s: %lu\n", "D$ blocked",       (end_vals[10]-start_vals[10]) * retirewidthbits);
     printf("%s: %lu\n", "Fetch Bubble",     (end_vals[11]-start_vals[11]) * corewidthbits);
     printf("%s: %lu\n", "Uops Issued",      (end_vals[12]-start_vals[12]) * issuewidthbits);
+    printf("%s: %lu\n", "Fetch Latency Bound",      (end_vals[13]-start_vals[13]));
 }
 
 #endif /*PMU_DEFS_H_*/
