@@ -116,7 +116,17 @@ endif()
 
 
 # Add target to generate executable
-add_executable(prefetcher prefetcher.c)
+add_executable(sas-no-prefetcher sequential-array-sum.c)
+add_executable(sas-nl sequential-array-sum.c)
+add_executable(sas-multinl sequential-array-sum.c)
+add_executable(sas-localizedstrided sequential-array-sum.c)
+
+# Define prefetcher types for each target
+target_compile_definitions(sas-no-prefetcher PRIVATE P0)
+target_compile_definitions(sas-nl PRIVATE P1)
+target_compile_definitions(sas-multinl PRIVATE P2)
+target_compile_definitions(sas-localizedstrided PRIVATE P3)
+
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
@@ -139,7 +149,10 @@ function(add_dump_target target_name)
     add_dependencies(dump ${target_name}-dump)
 endfunction()
 
-add_dump_target(prefetcher)
+add_dump_target(sas-no-prefetcher   )
+add_dump_target(sas-nl              )
+add_dump_target(sas-multinl         )
+add_dump_target(sas-localizedstrided)
 add_dump_target(csr)
 add_dump_target(bin-search)
 add_dump_target(thousandadds)
@@ -151,7 +164,10 @@ target_include_directories(csr                         PUBLIC ../toolchains/risc
 target_include_directories(bin-search                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(thousandadds                PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(jumparound                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
-target_include_directories(prefetcher                  PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(sas-no-prefetcher           PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(sas-nl                      PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(sas-multinl                 PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(sas-localizedstrided        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(prefetcher-stride           PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(prefetcher-stride-localized PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 

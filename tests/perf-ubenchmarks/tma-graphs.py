@@ -9,7 +9,7 @@ log_path = '/scratch/acui/chipyard-saws/sims/verilator/results.log'
 
 # Here are how the variables are correlated to the log outputs:
 # C_cycle -> Cycle
-# corewidth -> 8
+# corewidth -> 4
 # C_fetch -> Fetch Bubble
 # C_flush -> Flush
 # C_bm -> Branch Mispredict
@@ -54,6 +54,7 @@ def parse_log_file(log_path):
                 counters['I$ Blocked'] = int(re.search(r'I\$ Blocked:\s+(\d+)', config_data).group(1))
                 counters['D$ blocked'] = int(re.search(r'D\$ blocked:\s+(\d+)', config_data).group(1))
                 counters['Fetch Bubble'] = int(re.search(r'Fetch Bubble:\s+(\d+)', config_data).group(1))
+                counters['Fetch Latency Bound'] = int(re.search(r'Fetch Latency Bound:\s+(\d+)', config_data).group(1))
                 
                 knob_configs.append({
                     'name': config_name,
@@ -68,7 +69,7 @@ def parse_log_file(log_path):
     
     return ubenchmarks
 
-def compute_tma_metrics(counters, corewidth=8):
+def compute_tma_metrics(counters, corewidth=4):
     """Compute TMA metrics from performance counters."""
     # Map counters to variables
     C_cycle = counters['Cycle']
@@ -81,6 +82,7 @@ def compute_tma_metrics(counters, corewidth=8):
     C_iblk = counters['I$ Blocked']
     C_db = counters['D$ blocked']
     C_fetch = counters['Fetch Bubble']
+    C_fetchlat = counters['Fetch Latency Bound']
     
     # Compute intermediate values
     M_total = C_cycle * corewidth  # total uop slots
@@ -104,12 +106,11 @@ def compute_tma_metrics(counters, corewidth=8):
     Frontend = C_fetch / M_total if M_total > 0 else 0
     Backend = 1 - Retiring - BadSpec - Frontend
     
-    # Lower-level TMA
     MachCl = (C_issued - C_ret) * M_fl_r / M_total if M_total > 0 else 0  # Machine cleared
     BrMispr = ((C_issued - C_ret) * M_br_mr + C_rec) / M_total if M_total > 0 else 0
     Resteer = (C_issued - C_ret) * M_br_mr / M_total if M_total > 0 else 0
     RecovBub = C_rec / M_total if M_total > 0 else 0
-    FetchLat = C_iblk * corewidth / M_total if M_total > 0 else 0
+    FetchLat = C_fetchlat * corewidth / M_total if M_total > 0 else 0
     PCRes = Frontend - FetchLat
     CoreBound = Backend - C_db / M_total if M_total > 0 else 0
     Membound = C_db / M_total if M_total > 0 else 0
@@ -127,7 +128,7 @@ def compute_tma_metrics(counters, corewidth=8):
             'Resteer': Resteer,
             'Recovery Bubble': RecovBub,
             'Fetch Latency': FetchLat,
-            'PC Resolution': PCRes,
+            'Fetch Bandwidth': PCRes,
             'Core Bound': CoreBound,
             'Memory Bound': Membound
         }
@@ -141,9 +142,12 @@ def plot_top_level_tma(ubenchmark, knob_configs, all_metrics):
     
     # Prepare data for plotting (keep as decimal, not percentage)
     data = np.zeros((len(categories), len(config_names)))
+    cycle_counts = []
     for j, metrics in enumerate(all_metrics):
         for i, cat in enumerate(categories):
             data[i, j] = metrics['Top-level'][cat]
+        # Get cycle count from the corresponding config
+        cycle_counts.append(knob_configs[j]['counters']['Cycle'])
     
     # Set up the plot
     x = np.arange(len(config_names))
@@ -165,7 +169,8 @@ def plot_top_level_tma(ubenchmark, knob_configs, all_metrics):
     ax.set_xticklabels(config_names, rotation=15, ha='right')
     ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
     ax.grid(axis='y', alpha=0.3, linestyle='--')
-    ax.set_ylim(0, 1.0)
+    ax.set_ylim(0, 1.1)
+    ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     
     # Add percentage labels on each segment
     for j in range(len(config_names)):
@@ -176,6 +181,11 @@ def plot_top_level_tma(ubenchmark, knob_configs, all_metrics):
                 ax.text(x[j], cum_height + height/2, f'{height*100:.1f}%', 
                        ha='center', va='center', fontsize=9, fontweight='bold')
             cum_height += height
+    
+    # Add cycle count labels above each bar
+    for j in range(len(config_names)):
+        ax.text(x[j], 1.05, f'{cycle_counts[j]} cycles', 
+               ha='center', va='bottom', fontsize=10, fontweight='bold', color='black')
     
     plt.tight_layout()
     plt.savefig(f'tma_toplevel_{ubenchmark}.png', dpi=300, bbox_inches='tight')
@@ -232,16 +242,16 @@ def plot_backend_analysis(ubenchmark, knob_configs, all_metrics):
     print(f"Saved chart as: tma_backend_{ubenchmark}.png")
 
 def plot_frontend_analysis(ubenchmark, knob_configs, all_metrics):
-    """Create a stacked bar chart showing frontend breakdown into Fetch Latency and PC Resolution."""
+    """Create a stacked bar chart showing frontend breakdown into Fetch Latency and Fetch Bandwidth."""
     # Extract configuration names and frontend metrics
     config_names = [config['name'] for config in knob_configs]
-    categories = ['Fetch Latency', 'PC Resolution']
+    categories = ['Fetch Latency', 'Fetch Bandwidth']
     
     # Prepare data for plotting (keep as decimal, not percentage)
     data = np.zeros((len(categories), len(config_names)))
     for j, metrics in enumerate(all_metrics):
         data[0, j] = metrics['Lower-level']['Fetch Latency']
-        data[1, j] = metrics['Lower-level']['PC Resolution']
+        data[1, j] = metrics['Lower-level']['Fetch Bandwidth']
     
     # Set up the plot
     x = np.arange(len(config_names))
@@ -249,7 +259,7 @@ def plot_frontend_analysis(ubenchmark, knob_configs, all_metrics):
     fig, ax = plt.subplots(figsize=(10, 7))
     
     # Create stacked bars
-    colors = ['#3498db', '#1abc9c']  # Blue for Fetch Latency, Teal for PC Resolution
+    colors = ['#3498db', '#1abc9c']  # Blue for Fetch Latency, Teal for Fetch Bandwidth
     bottom = np.zeros(len(config_names))
     
     for i, (cat, color) in enumerate(zip(categories, colors)):
