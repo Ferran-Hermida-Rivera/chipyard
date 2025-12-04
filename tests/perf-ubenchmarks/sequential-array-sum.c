@@ -58,25 +58,31 @@ int main(void) {
 
     measure_cycles(data_warmup, warmup, warmup, 1);
 
-    #ifdef P0
+    #ifdef NOPREFETCH
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, NO_DCACHE_PREFETCHERS);
     
-    printf("Ubenchmark: SequentialArraySum\nKnobConfig: D$ Prefetch Disabled\n");
+    printf("Ubenchmark: StrideArraySum\nKnobConfig: D$ Prefetch Disabled\n");
     #endif
 
-    #ifdef P1
+    #ifdef PREFETCH0
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, NL_DCACHE_PREFETCHERS);
     
     printf("KnobConfig: D$ NL Prefetch Enabled\n");
     #endif
 
-    #ifdef P2
+    #ifdef PREFETCH1
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, MULTINL_DCACHE_PREFETCHERS);
     
     printf("KnobConfig: D$ MultiNL Prefetch Enabled\n");
     #endif
 
-    #ifdef P3
+    #ifdef PREFETCH2
+    WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, STRIDED_DCACHE_PREFETCHERS);
+    
+    printf("KnobConfig: D$ Strided Prefetch Enabled\n");
+    #endif
+
+    #ifdef PREFETCH3
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, LOCALIZEDSTRIDED_DCACHE_PREFETCHERS);
     
     printf("KnobConfig: D$ LocalizedStrided Prefetch Enabled\n");

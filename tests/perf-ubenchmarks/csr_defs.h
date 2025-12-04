@@ -25,7 +25,7 @@
 #define NO_DCACHE_PREFETCHERS 0
 #define NL_DCACHE_PREFETCHERS 1
 #define MULTINL_DCACHE_PREFETCHERS 2
-#define STRIDE_DCACHE_PREFETCHERS 4
+#define STRIDED_DCACHE_PREFETCHERS 4
 #define LOCALIZEDSTRIDED_DCACHE_PREFETCHERS 8
 
 /* Functions --------------------------------------------------------*/
