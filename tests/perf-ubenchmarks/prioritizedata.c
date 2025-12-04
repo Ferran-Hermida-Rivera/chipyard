@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "pmu_defs.h"
+#include "csr_defs.h"
 
 #include "l2-policy.h"
 
@@ -61,8 +62,23 @@ int main(void)
     config();
 
     ssize_t policy = read_policy();
+
+    WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, NO_DCACHE_PREFETCHERS);
+    WRITE_CUSTOM_CSR(CSR_ICACHE_PREFETCHERS, ENABLE);
+
+    // policy0 is all random
+    #if defined(POLICY_ZERO) // all random
+    printf("Ubenchmark: prioritizeData\n");
+    #elif defined(POLICY_ONE) // prioritize code 
+    policy = policy + 1;
+    #elif defined(POLICY_TWO) // prioritize data
     policy = policy + 2;
+    #elif defined(POLICY_THREE) // all random
+    policy = policy + 3;
+    #endif
+
     write_policy(policy);
+    policy = read_policy();
     printf("Current L2 Policy: %ld\n", policy);
 
     printf("Begin bench\n");
@@ -75,14 +91,7 @@ int main(void)
 
     printf("First sum: %lu\n", sum1);
 
-    printf("Ubenchmark: prioritizeData\n");
-    printf("KnobConfig: Prioritize Data\n");
+    printf("KnobConfig: Policy %d\n", policy);
     dump_counters_stored(4, 4, 8, start, end); // configs are specific to megaboom
-
-    // printf("KnobConfig: Prioritize Code\n");
-    // dump_counters_stored(4, 4, 8, start_1, end_1); // configs are specific to megaboom
-
-
-    // Then when the new code accesses the old data, performance should be different
 
 }

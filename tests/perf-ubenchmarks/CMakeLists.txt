@@ -157,6 +157,16 @@ target_compile_definitions(lstas-multinl          PRIVATE PREFETCH1)
 target_compile_definitions(lstas-strided          PRIVATE PREFETCH2)
 target_compile_definitions(lstas-localizedstrided PRIVATE PREFETCH3)
 
+add_executable(priotizedata_p0 prioritizedata.c)
+add_executable(priotizedata_p1 prioritizedata.c)
+add_executable(priotizedata_p2 prioritizedata.c)
+add_executable(priotizedata_p3 prioritizedata.c)
+
+target_compile_definitions(priotizedata_p0 PRIVATE POLICY_ZERO)
+target_compile_definitions(priotizedata_p1 PRIVATE POLICY_ONE)
+target_compile_definitions(priotizedata_p2 PRIVATE POLICY_TWO)
+target_compile_definitions(priotizedata_p3 PRIVATE POLICY_THREE)
+
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
@@ -197,6 +207,10 @@ add_dump_target(lstas-nl              )
 add_dump_target(lstas-multinl         )
 add_dump_target(lstas-strided         )
 add_dump_target(lstas-localizedstrided)
+add_dump_target(priotizedata_p0)
+add_dump_target(priotizedata_p1)
+add_dump_target(priotizedata_p2)
+add_dump_target(priotizedata_p3)
 add_dump_target(prioritizedata)
 
 target_include_directories(csr                         PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
@@ -219,6 +233,11 @@ target_include_directories(sas-multinl                 PUBLIC ../toolchains/risc
 target_include_directories(sas-strided                 PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(sas-localizedstrided        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(prioritizedata              PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(priotizedata_p0        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(priotizedata_p1        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(priotizedata_p2        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+target_include_directories(priotizedata_p3        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+
 
 #################################
 # spiflash.img target (Unchanged)
