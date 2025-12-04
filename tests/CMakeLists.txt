@@ -94,7 +94,11 @@ add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
 add_executable(prefetcher prefetcher.c)
 add_executable(parallel parallel.c)
+<<<<<<< HEAD
 add_executable(stress-prefetcher stress-prefetcher.c)
+=======
+add_executable(l2-policy l2-policy.c)
+>>>>>>> 9bd23a387024814c9f18222c9d6105a7f3be294c
 
 #################################
 # Disassembly
@@ -140,7 +144,12 @@ add_dump_target(thousandadds)
 add_dump_target(jumparound)
 add_dump_target(prefetcher)
 add_dump_target(parallel)
+<<<<<<< HEAD
 add_dump_target(stress-prefetcher)
+=======
+add_dump_target(l2-policy)
+
+>>>>>>> 9bd23a387024814c9f18222c9d6105a7f3be294c
 
 # add custom include
 target_include_directories(read_counters PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)
