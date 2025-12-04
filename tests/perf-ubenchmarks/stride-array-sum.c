@@ -18,17 +18,35 @@ typedef struct strider
     uint32_t m_data [STRIDE_IN_BYTES/sizeof(uint32_t)];
 } strider_t;
 
-static void measure_cycles(volatile strider_t arr[256],
+#define ARR_SIZE 128
+
+static void measure_cycles(volatile strider_t arr[ARR_SIZE],
                             unsigned long long start[MAX_PMU_COUNT],
                             unsigned long long end[MAX_PMU_COUNT])
 {
     acc = 0;
     ssize_t f = 0;
+    ssize_t dyn_i = 0;
     SUPER_BARRIER();
     store_counter(start);
-    for (ssize_t i = 0; i < 256; ++i) {
-        f += arr[i].m_data[0];
-        asm volatile("fence");
+    for (ssize_t i = 0; i < ARR_SIZE; ++i) {
+        f += arr[dyn_i].m_data[0];
+        asm volatile (
+            "sub %0, %0, %0\n\t" // f = 0
+            "addi %0, %0, 1\n\t" // f = 1
+            "add %0, %0, %0\n\t" // f = 2
+            "add %0, %0, %0\n\t" // f = 4
+            "add %0, %0, %0\n\t" // f = 8
+            "add %0, %0, %0\n\t" // f = 16
+            "add %0, %0, %0\n\t" // f = 32
+            "add %0, %0, %0\n\t" // f = 64
+            "add %0, %0, %0\n\t" // f = 128
+            "addi %0, %0, -127\n\t" // f = 1
+            "add %1, %1, %0\n\t" // dyn_i = dyn_i + f
+            : "+r" (f), "+r" (dyn_i)
+            :
+            :
+        );
     }
     store_counter(end);
     SUPER_BARRIER();
@@ -40,9 +58,9 @@ int main(void) {
 
     config(); 
     // store_counter take 300-400 cycles, need to amortize it over data size
-    static volatile strider_t data_x[256] __attribute__ ((aligned(64))); // Base at 0x80003000
+    static volatile strider_t data_x[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
     volatile uint32_t pad2[16] __attribute__ ((aligned(64)));
-    static volatile strider_t data_a[256] __attribute__ ((aligned(64))); // Base at 0x80003000
+    static volatile strider_t data_a[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
     unsigned long long start_0[MAX_PMU_COUNT];
     unsigned long long end_0[MAX_PMU_COUNT];
 

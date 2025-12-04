@@ -23,17 +23,36 @@ typedef struct strider2
     uint32_t m_data [STRIDE2_IN_BYTES/sizeof(uint32_t)];
 } strider2_t;
 
-static void measure_cycles(volatile strider_t arr[128], volatile strider2_t arr2[128],
+#define ARR_SIZE 128
+
+static void measure_cycles(volatile strider_t arr[ARR_SIZE], volatile strider2_t arr2[ARR_SIZE],
                               unsigned long long start[MAX_PMU_COUNT],
                             unsigned long long end[MAX_PMU_COUNT])
 {
     acc = 0;
     ssize_t f = 0;
+    ssize_t dyn_i = 0;
     SUPER_BARRIER();
     store_counter(start);
-    for (ssize_t i = 0; i < 128; ++i) {
-        f += arr[i].m_data[0];
-        f += arr2[i].m_data[0];
+    for (ssize_t i = 0; i < ARR_SIZE; ++i) {
+        f += arr[dyn_i].m_data[0];
+        f += arr2[dyn_i].m_data[0];
+        asm volatile (
+            "sub %0, %0, %0\n\t" // f = 0
+            "addi %0, %0, 1\n\t" // f = 1
+            "add %0, %0, %0\n\t" // f = 2
+            "add %0, %0, %0\n\t" // f = 4
+            "add %0, %0, %0\n\t" // f = 8
+            "add %0, %0, %0\n\t" // f = 16
+            "add %0, %0, %0\n\t" // f = 32
+            "add %0, %0, %0\n\t" // f = 64
+            "add %0, %0, %0\n\t" // f = 128
+            "addi %0, %0, -127\n\t" // f = 1
+            "add %1, %1, %0\n\t" // dyn_i = dyn_i + f
+            : "+r" (f), "+r" (dyn_i)
+            :
+            :
+        );
     }
     store_counter(end);
     SUPER_BARRIER();
@@ -43,11 +62,11 @@ static void measure_cycles(volatile strider_t arr[128], volatile strider2_t arr2
 int main(void) {
     printf("Begin execution\n");
 
-    volatile strider_t data_x[128] __attribute__ ((aligned(64))); // Base at 0x80003000
-    volatile strider2_t data2_x[128] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile strider_t data_x[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile strider2_t data2_x[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
     volatile uint32_t pad2[16] __attribute__ ((aligned(64)));
-    volatile strider_t data_a[128] __attribute__ ((aligned(64))); // Base at 0x80003000
-    volatile strider2_t data2_a[128] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile strider_t data_a[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
+    volatile strider2_t data2_a[ARR_SIZE] __attribute__ ((aligned(64))); // Base at 0x80003000
     
     unsigned long long warm_up[MAX_PMU_COUNT];
     unsigned long long start_0[MAX_PMU_COUNT];
@@ -61,7 +80,7 @@ int main(void) {
     #ifdef NOPREFETCH
     WRITE_CUSTOM_CSR(CSR_DCACHE_PREFETCHERS, NO_DCACHE_PREFETCHERS);
     
-    printf("Ubenchmark: StrideArraySum\nKnobConfig: D$ Prefetch Disabled\n");
+    printf("Ubenchmark: LocalizedStrideArraySum\nKnobConfig: D$ Prefetch Disabled\n");
     #endif
 
     #ifdef PREFETCH0
