@@ -1,6 +1,7 @@
 package chipyard
 
 import org.chipsalliance.cde.config.{Config}
+import freechips.rocketchip.subsystem.{MemoryBusKey, MemoryBusParams}
 
 // ---------------------
 // BOOM V3 Configs
@@ -97,6 +98,10 @@ class MegaBoomDistributedCountersConfig extends Config(
   new boom.v3.common.HasPMUDistributedCounters ++
   new boom.v3.common.WithNMegaBooms(1) ++
   new freechips.rocketchip.subsystem.WithInclusiveCache(nWays=8, capacityKB=64) ++
+  new Config((site, here, up) => {
+    case MemoryBusKey => up(MemoryBusKey).copy(beatBytes = 64)
+  }) ++
+  new freechips.rocketchip.subsystem.WithNMemoryChannels(4) ++         /** Default 1 AXI-4 memory channels */
   new chipyard.config.AbstractConfig)
 
 class GigaBoomDistributedCountersConfig extends Config(
