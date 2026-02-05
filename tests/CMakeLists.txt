@@ -88,17 +88,17 @@ add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
 add_executable(read_counters read_counters.c)
+add_executable(ctc-test ctc-test.c)
 add_executable(csr csr.c)
 add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
 add_executable(prefetcher prefetcher.c)
 add_executable(parallel parallel.c)
-<<<<<<< HEAD
 add_executable(stress-prefetcher stress-prefetcher.c)
-=======
 add_executable(l2-policy l2-policy.c)
->>>>>>> 9bd23a387024814c9f18222c9d6105a7f3be294c
+add_executable(parallel parallel.c)
+add_executable(stress_prefetcher stress_prefetcher.c)
 
 #################################
 # Disassembly
@@ -144,12 +144,12 @@ add_dump_target(thousandadds)
 add_dump_target(jumparound)
 add_dump_target(prefetcher)
 add_dump_target(parallel)
-<<<<<<< HEAD
 add_dump_target(stress-prefetcher)
-=======
 add_dump_target(l2-policy)
-
->>>>>>> 9bd23a387024814c9f18222c9d6105a7f3be294c
+add_dump_target(ctc-test)
+add_dump_target(multi-ctc-test)
+add_dump_target(parallel)
+add_dump_target(stress_prefetcher)
 
 # add custom include
 target_include_directories(read_counters PUBLIC ../toolchains/riscv-tools/riscv-pk/machine)

@@ -116,6 +116,7 @@ endif()
 
 
 # Add target to generate executable
+<<<<<<< HEAD
 add_executable(sas-no-prefetcher sequential-array-sum.c)
 add_executable(sas-nl sequential-array-sum.c)
 add_executable(sas-multinl sequential-array-sum.c)
@@ -172,6 +173,7 @@ add_executable(bin-search bin-search.c)
 add_executable(thousandadds thousandadds.c)
 add_executable(jumparound jumparound.c)
 add_executable(prioritizedata prioritizedata.c)
+add_executable(prefetcher prefetcher.c)
 
 # Add a target to generate all disassemblies
 add_custom_target(dump ALL)
@@ -188,6 +190,7 @@ function(add_dump_target target_name)
     add_dependencies(dump ${target_name}-dump)
 endfunction()
 
+<<<<<<< HEAD
 add_dump_target(sas-no-prefetcher   )
 add_dump_target(sas-nl              )
 add_dump_target(sas-multinl         )
@@ -237,6 +240,7 @@ target_include_directories(priotizedata_p0        PUBLIC ../toolchains/riscv-too
 target_include_directories(priotizedata_p1        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(priotizedata_p2        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
 target_include_directories(priotizedata_p3        PUBLIC ../toolchains/riscv-tools/riscv-pk/machine ../../software/baremetal-ide/driver/rocket-chip/rocketcore)
+add_dump_target(prefetcher)
 
 
 #################################
